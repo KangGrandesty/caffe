@@ -405,6 +405,19 @@ message LayerParameter {
   optional ThresholdParameter threshold_param = 128;
   optional TileParameter tile_param = 138;
   optional WindowDataParameter window_data_param = 129;
+  optional FractalJoinParameter fractal_join_param = 1234;
+  optional GlobalDropTriggerParameter global_drop_trigger_param = 1235;
+  optional SwitchParameter switch_param = 1236;
+  optional ReLnUParameter relnu_param = 1237;
+  optional PowReUParameter pow_reu_param = 1238;
+  optional SReLUParameter shift_relu_param = 1239;  
+  optional InterFlowParameter inter_flow_param = 1240;
+  optional PolarizeParameter polarize_param = 1241;
+  optional StretchParameter stretch_param = 1242;
+  optional FlatPatchParameter flat_patch_param = 1243;
+  optional ScaleInvariantParameter scale_invariant_param = 163;
+  optional BestMatchParameter best_match_param = 1244;
+  optional CrowdDataParameter crowd_data_param = 164;
 }
 
 // Message that stores parameters used to apply transformation
@@ -1409,4 +1422,107 @@ message PReLUParameter {
   optional FillerParameter filler = 1;
   // Whether or not slope parameters are shared across channels.
   optional bool channel_shared = 2 [default = false];
+}
+
+message GlobalDropParameter {
+  repeated float undrop_path_ratio = 1;
+  optional int32 num = 2 [default = 1];
+  optional int32 channels = 3 [default = 2];
+  optional int32 height = 4 [default = 1];
+  optional int32 width = 5 [default = 2];
+}
+
+message FractalJoinParameter {
+  repeated float drop_path_ratio = 1;
+  optional GlobalDropParameter global_drop = 2;
+}
+
+message GlobalDropTriggerParameter {
+  optional float global_drop_ratio = 1;
+  optional int32 num = 2 [default = 1];
+  optional int32 channels = 3 [default = 2];
+  optional int32 height = 4 [default = 1];
+  optional int32 width = 5 [default = 2];
+}
+
+message SwitchParameter {
+  repeated float switch_path = 1;
+}
+
+message ReLnUParameter {
+  optional float alpha = 1 [default = 1.0];
+  optional float beta = 2 [default = 1.0];
+}
+
+message PowReUParameter {
+  optional float powers = 1 [default = 0.5];
+}
+
+message InterFlowParameter {
+  repeated float path = 1;
+}
+
+message PolarizeParameter {
+  optional float ratio = 1 [default = 0.5];
+  optional float zoom = 2 [default = 0.5];
+}
+
+message StretchParameter {
+  optional int32 size = 1 [default = 2];
+}
+
+message FlatPatchParameter {
+  optional int32 size = 1 [default = 2];
+  optional int32 size_h = 2 [default = 0];
+  optional int32 size_w = 3 [default = 0];
+}
+
+message SReLUParameter {
+  optional float negative_slope = 1 [default = 0.0];
+  optional float shift = 2 [default = 0.0];
+  optional float range = 3 [default = 0.0];
+  optional bool map = 4 [default = false];
+  optional bool type = 5 [default = false];
+}
+
+message ScaleInvariantParameter {
+  optional float lambda = 1 [default = 1];
+}
+
+message BestMatchParameter {
+}
+
+message CrowdDataParameter {
+  // Specify the data source.
+  optional string source = 1;
+  // Specify the batch size.
+  optional uint32 batch_size = 4 [default = 1];
+  // The rand_skip variable is for the data layer to skip a few data points
+  // to avoid all asynchronous sgd clients to start at the same point. The skip
+  // point would be set as rand_skip * rand(0,1). Note that rand_skip should not
+  // be larger than the number of keys in the database.
+  optional uint32 rand_skip = 7 [default = 0];
+  // Whether or not ImageLayer should shuffle the list of files at every epoch.
+  optional bool shuffle = 8 [default = false];
+  // It will also resize images if new_height or new_width are not zero.
+  optional uint32 new_height = 9 [default = 0];
+  optional uint32 new_width = 10 [default = 0];
+  // Specify if the images are color or gray
+  optional bool is_color = 11 [default = true];
+  // DEPRECATED. See TransformationParameter. For data pre-processing, we can do
+  // simple scaling and subtracting the data mean, if provided. Note that the
+  // mean subtraction is always carried out before scaling.
+  optional float scale = 2 [default = 1];
+  optional string mean_file = 3;
+  // DEPRECATED. See TransformationParameter. Specify if we would like to randomly
+  // crop an image.
+  optional uint32 crop_size = 5 [default = 0];
+  // DEPRECATED. See TransformationParameter. Specify if we want to randomly mirror
+  // data.
+  optional bool mirror = 6 [default = false];
+  optional string root_folder = 12 [default = ""];
+   // For crowd_data_layer: the number of pooling layer(stride: 2)
+  optional uint32 downsamp_times = 17 [default =  2];
+  // For crowd_data_layer:base standard deviation of gaussian kernel for density map
+  optional float base_sigma = 18 [default = 1.5];
 }
